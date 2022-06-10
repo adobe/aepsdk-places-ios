@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		079EEFA52841818C00FD67F2 /* Places+EdgeEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079EEFA42841818B00FD67F2 /* Places+EdgeEvents.swift */; };
 		09F3D002F490B5D55CCF0DA7 /* Pods_AEPPlaces.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B564B4991C7921C27904C90 /* Pods_AEPPlaces.framework */; };
 		2407DF50264C9396002B070F /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2407DF4E264C9396002B070F /* MockDataStore.swift */; };
 		2407DF51264C9396002B070F /* MockNetworkServiceOverrider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2407DF4F264C9396002B070F /* MockNetworkServiceOverrider.swift */; };
@@ -123,6 +124,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		079EEFA42841818B00FD67F2 /* Places+EdgeEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Places+EdgeEvents.swift"; sourceTree = "<group>"; };
 		0B564B4991C7921C27904C90 /* Pods_AEPPlaces.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AEPPlaces.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DF0DA3F1EFC247D845A0CD6 /* Pods-PlacesTestApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PlacesTestApp.release.xcconfig"; path = "Target Support Files/Pods-PlacesTestApp/Pods-PlacesTestApp.release.xcconfig"; sourceTree = "<group>"; };
 		2407DF4E264C9396002B070F /* MockDataStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDataStore.swift; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 				243AC708262A4345006501EC /* PlacesRegionEvent.swift */,
 				243AC6F0262A42FB006501EC /* PointOfInterest.swift */,
 				243AC7AB263885CC006501EC /* SharedStateResult+Places.swift */,
+				079EEFA42841818B00FD67F2 /* Places+EdgeEvents.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -762,6 +765,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				079EEFA52841818C00FD67F2 /* Places+EdgeEvents.swift in Sources */,
 				24F2AED9265EACDE007C632F /* CLAccuracyAuthorization+Places.swift in Sources */,
 				243AC6F9262A4316006501EC /* Places+PublicApi.swift in Sources */,
 				243AC6E9262A41C0006501EC /* PlacesConfiguration.swift in Sources */,

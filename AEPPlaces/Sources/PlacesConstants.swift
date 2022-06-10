@@ -146,4 +146,45 @@ enum PlacesConstants {
             }
         }
     }
+    
+    enum Event {
+        enum Name {
+            static let LOCATION_TRACKING = "Location Tracking Event"
+        }
+    }
+    
+    enum XDM {
+        enum Key {
+            static let EVENT_TYPE = "eventType"
+            static let XDM = "xdm"
+            
+            static let PLACE_CONTEXT = "placeContext"
+            static let POI_INTERACTION = "POIinteraction"
+            static let POI_DETAIL = "poiDetail"
+            static let GEO_INTERACTION_DETAILS = "geoInteractionDetails"
+            static let GEO_SHAPE = "geoShape"
+            static let SCHEMA = "_schema"
+            static let GEO = "geo"
+            static let CIRCLE = "circle"
+            static let COORDINATES = "coordinates"
+            
+            static let POI_ID = "poiID"
+            static let NAME = "name"
+            static let LATITUDE = "latitude"
+            static let LONGITUDE = "longitude"
+            static let RADIUS = "radius"
+            
+            static let COUNTRY_CODE = "countryCode"
+            static let CITY = "city"
+            static let POSTAL_CODE = "postalCode"
+            static let STATE_PROVINCE = "stateProvince"
+            static let CATEGORY = "category"
+        }
+        enum Location {
+            enum EventType {
+                static let ENTRY = "location.entry"
+                static let EXIT = "location.exit"
+            }
+        }
+    }
 }

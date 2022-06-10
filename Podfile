@@ -33,6 +33,8 @@ def test_main
     pod 'AEPLifecycle'
     pod 'AEPSignal'
     pod 'AEPAssurance'
+    pod 'AEPEdgeIdentity'
+    pod 'AEPEdge'
     pod 'ACPCore', :git => 'https://github.com/adobe/aep-sdk-compatibility-ios.git', :branch => 'main'
 end
 

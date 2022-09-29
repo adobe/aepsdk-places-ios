@@ -31,4 +31,8 @@ extension SharedStateResult {
     var globalPrivacy: PrivacyStatus {
         return PrivacyStatus(rawValue: value?[PlacesConstants.EventDataKey.Configuration.GLOBAL_CONFIG_PRIVACY] as? String ?? "unknown")!
     }
+    
+    var experienceEventDataset: String? {
+        return value?[PlacesConstants.SharedState.Configuration.EXPERIENCE_EVENT_DATASET] as? String
+    }
 }

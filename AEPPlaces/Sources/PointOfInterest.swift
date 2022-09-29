@@ -21,7 +21,7 @@ public class PointOfInterest: NSObject {
     @objc public var latitude: Double
     @objc public var longitude: Double
     @objc public var radius: Int
-    @objc public var metaData: [String: String]
+    @objc public var metaData: [String: Any]
     @objc public var userIsWithin: Bool
 
     @objc public private(set) var libraryId: String
@@ -86,7 +86,7 @@ public class PointOfInterest: NSObject {
         self.libraryId = poiInfo[PlacesConstants.QueryService.Index.LIBRARY_ID] as? String ?? ""
         self.weight = poiInfo[PlacesConstants.QueryService.Index.WEIGHT] as? Int ?? 0
         self.userIsWithin = userIsWithin!
-        self.metaData = jsonObject[PlacesConstants.QueryService.Json.META_DATA] as? [String: String] ?? [:]
+        self.metaData = jsonObject[PlacesConstants.QueryService.Json.META_DATA] as? [String: Any] ?? [:]
     }
 
     /// Converts and returns the contents of this `PointOfInterest` as a JSON string.

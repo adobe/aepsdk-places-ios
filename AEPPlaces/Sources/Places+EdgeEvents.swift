@@ -16,22 +16,40 @@ import Foundation
 
 extension Places {
 
-    func sendExperienceEventToEdge( poi: PointOfInterest, withRegionEventType type: PlacesRegionEvent) {
+    func sendExperienceEventToEdge( event: Event, poi: PointOfInterest, withRegionEventType type: PlacesRegionEvent) {
 
+        // an experience event dataset id is required for sending a message
+        guard let datasetId = getDatasetId(forEvent: event) else {
+            Log.warning(label: PlacesConstants.LOG_TAG, "Unable to record location event - unable to obtain AJO dataset.")
+            return
+        }
+        
         // add eventType and prescribed data for the experience info
-        var xdmMap: [String: Any] = [
+        var poiInteraction : [String: Any] = [
+            PlacesConstants.XDM.Key.POI_DETAIL: createXDMPOIDetail(poi: poi)
+        ]
+        
+        if type == PlacesRegionEvent.entry {
+            poiInteraction[PlacesConstants.XDM.Key.POIENTRIES] = createPOIEntriesExits(poi: poi)
+        } else {
+            poiInteraction[PlacesConstants.XDM.Key.POIEXITS] = createPOIEntriesExits(poi: poi)
+        }
+        
+        let xdmMap: [String: Any] = [
             PlacesConstants.XDM.Key.EVENT_TYPE: type.toExperienceEventType(),
             PlacesConstants.XDM.Key.PLACE_CONTEXT: [
-                PlacesConstants.XDM.Key.POI_INTERACTION: [
-                    PlacesConstants.XDM.Key.POI_DETAIL: createXDMPOIDetail(poi: poi)
-                ],
-                PlacesConstants.XDM.Key.GEO: createXDMGeo(poi: poi)
+                PlacesConstants.XDM.Key.POI_INTERACTION: poiInteraction
             ]
         ]
 
         // Creating xdm edge event data
         let xdmEventData: [String: Any] = [
-            PlacesConstants.XDM.Key.XDM: xdmMap
+            PlacesConstants.XDM.Key.XDM: xdmMap,
+            PlacesConstants.XDM.Key.META: [
+                PlacesConstants.XDM.Key.COLLECT: [
+                    PlacesConstants.XDM.Key.DATASET_ID: datasetId
+                ]
+            ]
 
         ]
         
@@ -70,22 +88,54 @@ extension Places {
             ]
         ]
         
-        let poiDetail: [String: Any] = [
+        var poiDetail: [String: Any] = [
             PlacesConstants.XDM.Key.POI_ID: poi.identifier,
             PlacesConstants.XDM.Key.NAME: poi.name,
-            PlacesConstants.XDM.Key.CATEGORY: poi.metaData["category"],
-            PlacesConstants.XDM.Key.GEO_INTERACTION_DETAILS: geoShape
+            PlacesConstants.XDM.Key.GEO_INTERACTION_DETAILS: geoShape,
+            PlacesConstants.XDM.Key.METADATA : createPOIMetadata(poi: poi)
         ]
+        
+        if (poi.metaData["category"] != nil) {
+            poiDetail[PlacesConstants.XDM.Key.CATEGORY] = poi.metaData["category"]
+        }
         
         return poiDetail
     }
+        
+    private func createPOIMetadata(poi : PointOfInterest) -> [String: Any] {
+        var list = [[String:Any]]()
+
+        for (metaKey, metaValue) in poi.metaData {
+            let metaTuple : [String:Any] = [
+                PlacesConstants.XDM.Key.KEY: metaKey,
+                PlacesConstants.XDM.Key.VALUE : metaValue
+            ]
+                        
+            list.append(metaTuple)
+        }
+        
+        let metadata : [String: Any] = [PlacesConstants.XDM.Key.LIST : list]
+        return metadata
+    }
     
-    private func createXDMGeo(poi: PointOfInterest) -> [String: Any] {
-        let geo : [String: Any] = [
-//            PlacesConstants.XDM.Key.COUNTRY_CODE: poi.metaData["country"],
-            PlacesConstants.XDM.Key.STATE_PROVINCE: poi.metaData["state"],
-            PlacesConstants.XDM.Key.CITY: poi.metaData["city"]
+    private func createPOIEntriesExits(poi : PointOfInterest) -> [String: Any] {
+        let poiEntriesExits : [String: Any] = [
+            PlacesConstants.XDM.Key.ID : poi.identifier,
+            PlacesConstants.XDM.Key.VALUE : 1
         ]
-        return geo;
+        return poiEntriesExits
+    }
+    
+    /// Retrieves the Messaging event datasetId from configuration shared state
+    ///
+    /// - Parameter event: the `Event` needed for retrieving the correct shared state
+    /// - Returns: a `String` containing the event datasetId for Messaging
+    private func getDatasetId(forEvent event: Event? = nil) -> String? {
+        guard let configuration = getSharedState(extensionName: PlacesConstants.SharedState.Configuration.NAME, event: event),
+              let datasetId = configuration.experienceEventDataset else {
+            return nil
+        }
+
+        return datasetId.isEmpty ? nil : datasetId
     }
 }

@@ -158,6 +158,10 @@ enum PlacesConstants {
             static let EVENT_TYPE = "eventType"
             static let XDM = "xdm"
             
+            static let META = "meta"
+            static let COLLECT = "collect"
+            static let DATASET_ID = "datasetId"
+            
             static let PLACE_CONTEXT = "placeContext"
             static let POI_INTERACTION = "POIinteraction"
             static let POI_DETAIL = "poiDetail"
@@ -179,12 +183,33 @@ enum PlacesConstants {
             static let POSTAL_CODE = "postalCode"
             static let STATE_PROVINCE = "stateProvince"
             static let CATEGORY = "category"
+            
+            static let METADATA = "metadata"
+            static let LIST = "list"
+            static let KEY = "key"
+            static let VALUE = "value"
+            
+            static let POIENTRIES = "poiEntries"
+            static let POIEXITS = "poiExits"
+            static let ID = "id"
+            
+            static let NAMESPACE = "_aemonacpprodcampaign"
         }
         enum Location {
             enum EventType {
                 static let ENTRY = "location.entry"
                 static let EXIT = "location.exit"
             }
+        }
+    }
+    
+    /* Messaging's config, to pickup its AEP dataset id. */
+    enum SharedState {
+        enum Configuration {
+            static let NAME = "com.adobe.module.configuration"
+            
+            // Messaging dataset ids
+            static let EXPERIENCE_EVENT_DATASET = "messaging.eventDataset"
         }
     }
 }

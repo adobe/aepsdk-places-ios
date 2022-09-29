@@ -254,7 +254,7 @@ public class Places: NSObject, Extension {
 
         dispatchRegionEventFor(poi: triggeringPoi, withRegionEventType: regionEventType)
         
-        sendExperienceEventToEdge(poi: triggeringPoi, withRegionEventType: regionEventType)
+        sendExperienceEventToEdge(event: event, poi: triggeringPoi, withRegionEventType: regionEventType)
     }
 
     private func getPlacesConfiguration(forEvent event: Event) -> PlacesConfiguration? {

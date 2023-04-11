@@ -127,11 +127,11 @@ class PlacesTests: XCTestCase {
                                         ], .set))
     }
     
-    func getGetNearbyPlacesRequestEvent() -> Event {
+    func getGetNearbyPlacesRequestEvent(_ data: [String: Any]? = nil) -> Event {
         return Event(name: PlacesConstants.EventName.Request.GET_NEARBY_PLACES,
                      type: EventType.places,
                      source: EventSource.requestContent,
-                     data: [
+                     data: data ?? [
                         PlacesConstants.EventDataKey.Places.LATITUDE: 12.34,
                         PlacesConstants.EventDataKey.Places.LONGITUDE: 23.45,
                         PlacesConstants.EventDataKey.Places.COUNT: 7,
@@ -139,11 +139,11 @@ class PlacesTests: XCTestCase {
                      ])
     }
     
-    func getProcessRegionEvent() -> Event {
+    func getProcessRegionEvent(_ data: [String: Any]? = nil) -> Event {
         return Event(name: PlacesConstants.EventName.Request.PROCESS_REGION_EVENT,
                      type: EventType.places,
                      source: EventSource.requestContent,
-                     data: [
+                     data: data ?? [
                         PlacesConstants.EventDataKey.Places.REGION_ID: "1234",
                         PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: PlacesRegionEvent.entry.stringValue,
                         PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.PROCESS_REGION_EVENT
@@ -168,21 +168,21 @@ class PlacesTests: XCTestCase {
                      ])
     }
     
-    func getSetAuthorizationStatusRequestEvent() -> Event {
+    func getSetAuthorizationStatusRequestEvent(_ data: [String: Any]? = nil) -> Event {
         return Event(name: PlacesConstants.EventName.Request.SET_AUTHORIZATION_STATUS,
                      type: EventType.places,
                      source: EventSource.requestContent,
-                     data: [
+                     data: data ?? [
                         PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.SET_AUTHORIZATION_STATUS,
                         PlacesConstants.EventDataKey.Places.AUTH_STATUS: "always"
                      ])
     }
     
-    func getSetAccuracyAuthorizationRequestEvent() -> Event {
+    func getSetAccuracyAuthorizationRequestEvent(_ data: [String: Any]? = nil) -> Event {
         return Event(name: PlacesConstants.EventName.Request.SET_ACCURACY,
                      type: EventType.places,
                      source: EventSource.requestContent,
-                     data: [
+                     data: data ?? [
                         PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.SET_ACCURACY,
                         PlacesConstants.EventDataKey.Places.ACCURACY: "full"
                      ])
@@ -340,8 +340,11 @@ class PlacesTests: XCTestCase {
         // setup
         prepareConfig(privacy: .optedIn)
         mockQueryService.returnValue = PlacesQueryServiceResult(pois: [poi, poi2], response: .ok)
-        let requestingEvent = getGetNearbyPlacesRequestEvent()
-        requestingEvent.data?[PlacesConstants.EventDataKey.Places.COUNT] = nil
+        let requestingEvent = getGetNearbyPlacesRequestEvent([
+            PlacesConstants.EventDataKey.Places.LATITUDE: 12.34,
+            PlacesConstants.EventDataKey.Places.LONGITUDE: 23.45,
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_NEARBY_PLACES
+         ])
         
         // test
         mockRuntime.simulateComingEvents(requestingEvent)
@@ -486,8 +489,11 @@ class PlacesTests: XCTestCase {
     func testHandleGetNearbyPlacesNoLatitudeInEventData() throws {
         // setup
         prepareConfig(privacy: .optedIn)
-        let requestingEvent = getGetNearbyPlacesRequestEvent()
-        requestingEvent.data![PlacesConstants.EventDataKey.Places.LATITUDE] = nil
+        let requestingEvent = getGetNearbyPlacesRequestEvent([
+            PlacesConstants.EventDataKey.Places.LONGITUDE: 23.45,
+            PlacesConstants.EventDataKey.Places.COUNT: 7,
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_NEARBY_PLACES
+         ])
         
         // test
         mockRuntime.simulateComingEvents(requestingEvent)
@@ -508,8 +514,11 @@ class PlacesTests: XCTestCase {
     func testHandleGetNearbyPlacesNoLongitudeInEventData() throws {
         // setup
         prepareConfig(privacy: .optedIn)
-        let requestingEvent = getGetNearbyPlacesRequestEvent()
-        requestingEvent.data![PlacesConstants.EventDataKey.Places.LONGITUDE] = nil
+        let requestingEvent = getGetNearbyPlacesRequestEvent([
+            PlacesConstants.EventDataKey.Places.LATITUDE: 12.34,
+            PlacesConstants.EventDataKey.Places.COUNT: 7,
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_NEARBY_PLACES
+         ])
         
         // test
         mockRuntime.simulateComingEvents(requestingEvent)
@@ -676,8 +685,10 @@ class PlacesTests: XCTestCase {
     func testHandleProcessRegionEventRequestMissingRegionId() throws {
         // setup
         prepareConfig(privacy: .optedIn)
-        let requestingEvent = getProcessRegionEvent()
-        requestingEvent.data![PlacesConstants.EventDataKey.Places.REGION_ID] = nil
+        let requestingEvent = getProcessRegionEvent([
+            PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: PlacesRegionEvent.entry.stringValue,
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.PROCESS_REGION_EVENT
+         ])
         
         // test
         mockRuntime.simulateComingEvents(requestingEvent)
@@ -689,8 +700,10 @@ class PlacesTests: XCTestCase {
     func testHandleProcessRegionEventRequestMissingRegionEventType() throws {
         // setup
         prepareConfig(privacy: .optedIn)
-        let requestingEvent = getProcessRegionEvent()
-        requestingEvent.data![PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE] = nil
+        let requestingEvent = getProcessRegionEvent([
+            PlacesConstants.EventDataKey.Places.REGION_ID: "1234",
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.PROCESS_REGION_EVENT
+         ])
         
         // test
         mockRuntime.simulateComingEvents(requestingEvent)
@@ -840,8 +853,9 @@ class PlacesTests: XCTestCase {
         
         // setup
         prepareConfig(privacy: .optedIn)
-        let requestingEvent = getSetAccuracyAuthorizationRequestEvent()
-        requestingEvent.data?[PlacesConstants.EventDataKey.Places.ACCURACY] = nil
+        let requestingEvent = getSetAccuracyAuthorizationRequestEvent([
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.SET_ACCURACY
+        ])
         XCTAssertNil(places.accuracy)
         
         // test
@@ -873,8 +887,9 @@ class PlacesTests: XCTestCase {
     func testSetAuthorizationStatusNoStatusInEventData() throws {
         // setup
         prepareConfig(privacy: .optedIn)
-        let requestingEvent = getSetAuthorizationStatusRequestEvent()
-        requestingEvent.data?[PlacesConstants.EventDataKey.Places.AUTH_STATUS] = nil
+        let requestingEvent = getSetAuthorizationStatusRequestEvent([
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.SET_AUTHORIZATION_STATUS
+        ])        
         XCTAssertEqual(.notDetermined, places.authStatus)
         
         // test

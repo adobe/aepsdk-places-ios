@@ -61,7 +61,7 @@ extension Places {
 
         // add nearby points of interest
         if !nearbyPois.isEmpty {
-            data[PlacesConstants.SharedStateKey.NEARBY_POIS] = poisToStringMap(pois: nearbyPois)
+            data[PlacesConstants.SharedStateKey.NEARBY_POIS] = nearbyPois.map { $1.mapValue }
         }
 
         // add the current poi
@@ -193,20 +193,6 @@ extension Places {
     /// Determines whether the current Places membership is still valid
     private var membershipDataIsValid: Bool {
         return Date().timeIntervalSince1970 < membershipValidUntil ?? 0
-    }
-
-    /// Converts the provided `[String: PointOfInterest]` into a dictionary of `String`s
-    /// The values in the new dictionary are json string representations of the `PointOfInterest` object
-    /// - Parameter pois: the dictionary to be converted
-    /// - Returns: a `[String: String]` representation of the provided `pois`
-    private func poisToStringMap(pois: [String: PointOfInterest]) -> [String: String] {
-        var poiStringMap: [String: String] = [:]
-
-        for poi in pois.values {
-            poiStringMap[poi.identifier] = poi.toJsonString()
-        }
-
-        return poiStringMap
     }
 
     /// Loops through `userWithinPois` to appropriately set `currentPoi`

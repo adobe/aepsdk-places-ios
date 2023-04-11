@@ -3,7 +3,7 @@
  This file is licensed to you under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License. You may obtain a copy
  of the License at http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software distributed under
  the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
  OF ANY KIND, either express or implied. See the License for the specific language
@@ -26,20 +26,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         MobileCore.setLogLevel(.trace)
-        
+
         // steve-places in Adobe Benedick Corp: launch-EN459260fc579a4dcbb2d1743947e65f09-development
-        MobileCore.configureWith(appId: "3149c49c3910/5dca987ebdc9/launch-7537b2b46aa8-development")
+        MobileCore.configureWith(appId: "")
         
         let appState = application.applicationState
         MobileCore.registerExtensions([Places.self, Signal.self, Analytics.self, Identity.self, Lifecycle.self, Assurance.self,  AEPEdgeIdentity.Identity.self, Edge.self]) {
             // Griffon Session - AEPPlaces in Adobe Benedick Corp
-            Assurance.startSession(url: URL(string: "aepplaces://?adb_validation_sessionid=ab4814ee-63c1-4e67-a4b7-bea99b30bc7c"))
+            Assurance.startSession(url: URL(string: ""))
             
             if appState != .background {
                 MobileCore.lifecycleStart(additionalContextData: nil)
             }
         }
-        
+
         return true
     }
 
@@ -59,6 +59,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
 
-
 }
-

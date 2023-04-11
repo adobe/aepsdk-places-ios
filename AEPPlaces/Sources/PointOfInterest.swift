@@ -49,7 +49,8 @@ public class PointOfInterest: NSObject {
                 weight = json[PlacesConstants.EventDataKey.Places.WEIGHT] as? Int ?? 0
                 libraryId = json[PlacesConstants.EventDataKey.Places.LIBRARY_ID] as? String ?? ""
                 userIsWithin = json[PlacesConstants.EventDataKey.Places.USER_IS_WITHIN] as? Bool ?? false
-                metaData = json[PlacesConstants.EventDataKey.Places.REGION_META_DATA] as? [String: String] ?? [:]
+                let metaDataAny = json[PlacesConstants.EventDataKey.Places.REGION_META_DATA] as? [String: Any] ?? [:]
+                metaData = metaDataAny.mapValues { String(describing: $0) }
             } else {
                 Log.warning(label: PlacesConstants.LOG_TAG, "An error occurred while trying to read a PointOfInterest json string.")
                 throw PlacesDataObjectInvalidInitialization(message: "Invalid JSON string")
@@ -86,7 +87,8 @@ public class PointOfInterest: NSObject {
         self.libraryId = poiInfo[PlacesConstants.QueryService.Index.LIBRARY_ID] as? String ?? ""
         self.weight = poiInfo[PlacesConstants.QueryService.Index.WEIGHT] as? Int ?? 0
         self.userIsWithin = userIsWithin!
-        self.metaData = jsonObject[PlacesConstants.QueryService.Json.META_DATA] as? [String: Any] ?? [:]
+        let metaDataAny = jsonObject[PlacesConstants.QueryService.Json.META_DATA] as? [String: Any] ?? [:]
+        self.metaData = metaDataAny.mapValues { String(describing: $0) }
     }
 
     /// Converts and returns the contents of this `PointOfInterest` as a JSON string.

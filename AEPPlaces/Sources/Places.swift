@@ -38,7 +38,7 @@ public class Places: NSObject, Extension {
     // MARK: properties
     public static var extensionVersion: String = PlacesConstants.EXTENSION_VERSION
     public var name: String = PlacesConstants.EXTENSION_NAME
-    public var friendlyName: String = PlacesConstants.EXTENSION_NAME
+    public var friendlyName: String = PlacesConstants.FRIENDLY_NAME
     public var metadata: [String: String]?
     public var runtime: ExtensionRuntime
 

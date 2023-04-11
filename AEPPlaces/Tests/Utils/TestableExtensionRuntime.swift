@@ -17,6 +17,18 @@ import Foundation
 ///
 /// Enable easy setup for the input and verification of the output of an extension
 public class TestableExtensionRuntime: ExtensionRuntime {
+    public func getSharedState(extensionName: String, event: AEPCore.Event?, barrier: Bool, resolution: AEPCore.SharedStateResolution) -> AEPCore.SharedStateResult? {
+        return nil
+    }
+    
+    public func getXDMSharedState(extensionName: String, event: AEPCore.Event?, barrier: Bool, resolution: AEPCore.SharedStateResolution) -> AEPCore.SharedStateResult? {
+        return nil
+    }
+    
+    public func getHistoricalEvents(_ requests: [AEPCore.EventHistoryRequest], enforceOrder: Bool, handler: @escaping ([AEPCore.EventHistoryResult]) -> Void) {
+        
+    }
+    
     public var listeners: [String: EventListener] = [:]
     public var dispatchedEvents: [Event] = []
     public var createdSharedStates: [[String: Any]?] = []

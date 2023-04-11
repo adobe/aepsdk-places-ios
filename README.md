@@ -25,7 +25,7 @@ To generate `AEPPlaces.xcframework`, run the following command from the root dir
 make archive
 ```
 
-This will generate an XCFramework under the `build` folder. Drag and drop `AEPPlaces.xcframework` to your app target.
+This will do a `pod install` then generate an XCFramework under the `build` folder. Drag and drop `AEPPlaces.xcframework` to your app target.
 
 ### [CocoaPods](https://guides.cocoapods.org/using/using-cocoapods.html)
 
@@ -40,11 +40,15 @@ end
 
 ### [Swift Package Manager](https://github.com/apple/swift-package-manager)
 
-To add the AEPPlaces Package to your application, from the Xcode menu select:
+To add the AEPPlaces package to your application, from the Xcode menu select:
 
-`File > Swift Packages > Add Package Dependency...`
+`File > Add Packages...`
+
+> **Note**: the menu options may vary depending on the version of Xcode being used.
 
 Enter the URL for the AEPPlaces package repository: `https://github.com/adobe/aepsdk-places-ios.git`.
+
+For `Dependency Rule`, select `Up to Next Major Version`.
 
 Alternatively, if your project has a `Package.swift` file, you can add AEPPlaces directly to your dependencies:
 

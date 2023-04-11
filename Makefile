@@ -32,7 +32,7 @@ open:
 clean:
 	(rm -rf build)
 
-archive:
+archive: pod-install
 	xcodebuild archive -workspace $(PROJECT_NAME).xcworkspace -scheme $(SCHEME_NAME_XCFRAMEWORK) -archivePath "./build/ios.xcarchive" -sdk iphoneos -destination="iOS" SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
 	xcodebuild archive -workspace $(PROJECT_NAME).xcworkspace -scheme $(SCHEME_NAME_XCFRAMEWORK) -archivePath "./build/ios_simulator.xcarchive" -sdk iphonesimulator -destination="iOS Simulator" SKIP_INSTALL=NO BUILD_LIBRARIES_FOR_DISTRIBUTION=YES
 	xcodebuild -create-xcframework -framework $(SIMULATOR_ARCHIVE_PATH)$(EXTENSION_NAME).framework -framework $(IOS_ARCHIVE_PATH)$(EXTENSION_NAME).framework -output ./build/$(TARGET_NAME_XCFRAMEWORK)
@@ -43,17 +43,22 @@ test:
 	@echo "######################################################################"
 	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'platform=iOS Simulator,name=iPhone 8' -derivedDataPath build/out -enableCodeCoverage YES
 
-install-swiftlint:
-	HOMEBREW_NO_AUTO_UPDATE=1 brew install swiftlint && brew cleanup swiftlint
-
 install-githook:
 	./Scripts/git-hooks/setup.sh
 
+format: swift-format lint-autocorrect
+
+install-swiftformat:
+	(brew install swiftformat)
+
+swift-format:
+	(swiftformat $(PROJECT_NAME)/Sources --swiftversion 5.1)
+
 lint-autocorrect:
-	(swiftlint autocorrect --format)
+	(./Pods/SwiftLint/swiftlint --fix $(PROJECT_NAME)/Sources --format)
 
 lint:
-	(swiftlint lint Sources TestApps/$(APP_NAME))
+	(./Pods/SwiftLint/swiftlint lint $(PROJECT_NAME)/Sources)
 
 build-test-apps:
 	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -scheme $(APP_NAME) -destination 'platform=iOS Simulator,name=iPhone 8'
@@ -71,3 +76,6 @@ test-spm-integration:
 
 test-podspec:
 	(sh ./Scripts/test-podspec.sh)
+
+test-update-versions:
+	(sh ./Scripts/update-versions.sh -n Places -v 9.9.9 -d "AEPCore 8.8.8, AEPServices 8.8.8")

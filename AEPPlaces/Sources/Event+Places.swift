@@ -10,105 +10,110 @@
  governing permissions and limitations under the License.
  */
 
-import Foundation
 import AEPCore
+import Foundation
 
 /// Extension class providing streamlined access to data in `Event` objects.
 extension Event {
     // MARK: - Event Type/Source/Owner Detection
+
     var isPlacesRequestEvent: Bool {
-        return type == EventType.places && source == EventSource.requestContent
+        type == EventType.places && source == EventSource.requestContent
     }
 
     var isSharedStateUpdateEvent: Bool {
-        return type == EventType.hub && source == EventSource.sharedState
+        type == EventType.hub && source == EventSource.sharedState
     }
 
     // MARK: - Configuration, Privacy & Settings
+
     var sharedStateOwner: String? {
-        return data?[PlacesConstants.EventDataKey.SHARED_STATE_OWNER] as? String
+        data?[PlacesConstants.EventDataKey.SHARED_STATE_OWNER] as? String
     }
 
     var isConfigSharedStateChange: Bool {
-        return sharedStateOwner == PlacesConstants.EventDataKey.Configuration.SHARED_STATE_NAME
+        sharedStateOwner == PlacesConstants.EventDataKey.Configuration.SHARED_STATE_NAME
     }
 
     var privacyStatus: String? {
-        return data?[PlacesConstants.EventDataKey.Configuration.GLOBAL_CONFIG_PRIVACY] as? String
+        data?[PlacesConstants.EventDataKey.Configuration.GLOBAL_CONFIG_PRIVACY] as? String
     }
 
     var locationAuthorizationStatus: String? {
-        return data?[PlacesConstants.EventDataKey.Places.AUTH_STATUS] as? String
+        data?[PlacesConstants.EventDataKey.Places.AUTH_STATUS] as? String
     }
 
     var locationAccuracy: String? {
-        return data?[PlacesConstants.EventDataKey.Places.ACCURACY] as? String
+        data?[PlacesConstants.EventDataKey.Places.ACCURACY] as? String
     }
 
     // MARK: - Request Type handling
+
     var placesRequestType: String? {
-        return data?[PlacesConstants.EventDataKey.Places.REQUEST_TYPE] as? String
+        data?[PlacesConstants.EventDataKey.Places.REQUEST_TYPE] as? String
     }
 
     var isGetNearbyPlacesRequestType: Bool {
-        return placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.GET_NEARBY_PLACES
+        placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.GET_NEARBY_PLACES
     }
 
     var isProcessRegionEventRequestType: Bool {
-        return placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.PROCESS_REGION_EVENT
+        placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.PROCESS_REGION_EVENT
     }
 
     var isGetUserWithinPlacesRequestType: Bool {
-        return placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.GET_USER_WITHIN_PLACES
+        placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.GET_USER_WITHIN_PLACES
     }
 
     var isGetLastKnownLocationRequestType: Bool {
-        return placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.GET_LAST_KNOWN_LOCATION
+        placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.GET_LAST_KNOWN_LOCATION
     }
 
     var isResetRequestType: Bool {
-        return placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.RESET
+        placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.RESET
     }
 
     var isSetAuthorizationStatusRequestType: Bool {
-        return placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.SET_AUTHORIZATION_STATUS
+        placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.SET_AUTHORIZATION_STATUS
     }
 
     var isSetAccuracyRequestType: Bool {
-        return placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.SET_ACCURACY
+        placesRequestType == PlacesConstants.EventDataKey.Places.RequestType.SET_ACCURACY
     }
 
     // MARK: - Get Nearby Places
+
     var latitude: Double? {
-        return data?[PlacesConstants.EventDataKey.Places.LATITUDE] as? Double
+        data?[PlacesConstants.EventDataKey.Places.LATITUDE] as? Double
     }
 
     var longitude: Double? {
-        return data?[PlacesConstants.EventDataKey.Places.LONGITUDE] as? Double
+        data?[PlacesConstants.EventDataKey.Places.LONGITUDE] as? Double
     }
 
     var requestedPoiCount: Int? {
-        return data?[PlacesConstants.EventDataKey.Places.COUNT] as? Int
+        data?[PlacesConstants.EventDataKey.Places.COUNT] as? Int
     }
 
     var placesQueryResponseCode: PlacesQueryResponseCode? {
-        return PlacesQueryResponseCode(rawValue: data?[PlacesConstants.EventDataKey.Places.RESPONSE_STATUS] as? Int ?? -1)
+        PlacesQueryResponseCode(rawValue: data?[PlacesConstants.EventDataKey.Places.RESPONSE_STATUS] as? Int ?? -1)
     }
 
     var nearbyPois: [[String: Any]]? {
-        return data?[PlacesConstants.SharedStateKey.NEARBY_POIS] as? [[String: Any]]
+        data?[PlacesConstants.SharedStateKey.NEARBY_POIS] as? [[String: Any]]
     }
 
     var userWithinPois: [[String: Any]]? {
-        return data?[PlacesConstants.SharedStateKey.USER_WITHIN_POIS] as? [[String: Any]]
+        data?[PlacesConstants.SharedStateKey.USER_WITHIN_POIS] as? [[String: Any]]
     }
 
     // MARK: - Process Region Events
+
     var regionId: String? {
-        return data?[PlacesConstants.EventDataKey.Places.REGION_ID] as? String
+        data?[PlacesConstants.EventDataKey.Places.REGION_ID] as? String
     }
 
     var regionEventType: PlacesRegionEvent? {
-        return PlacesRegionEvent.fromString(data?[PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE] as? String ?? "")
+        PlacesRegionEvent.fromString(data?[PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE] as? String ?? "")
     }
 }

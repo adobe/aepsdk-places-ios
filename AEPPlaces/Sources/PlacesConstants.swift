@@ -19,10 +19,10 @@ enum PlacesConstants {
     static let LOG_TAG = "Places"
 
     enum DefaultValues {
-        static let MEMBERSHIP_TTL: TimeInterval = 60 * 60  // 1 hour in seconds
-        static let NEARBY_POI_COUNT             = 10
-        static let RADIUS                       = 1000     // 1 km
-        static let INVALID_LAT_LON              = 999.999
+        static let MEMBERSHIP_TTL: TimeInterval = 60 * 60 // 1 hour in seconds
+        static let NEARBY_POI_COUNT = 10
+        static let RADIUS = 1000 // 1 km
+        static let INVALID_LAT_LON = 999.999
     }
 
     enum UserDefaults {
@@ -88,6 +88,7 @@ enum PlacesConstants {
             static let RESET = "requestreset"
             static let SET_ACCURACY = "requestsetaccuracy"
             static let SET_AUTHORIZATION_STATUS = "requestsetauthorizationstatus"
+            static let LOCATION_TRACKING = "Location Tracking Event"
         }
 
         enum Response {
@@ -146,22 +147,16 @@ enum PlacesConstants {
             }
         }
     }
-    
-    enum Event {
-        enum Name {
-            static let LOCATION_TRACKING = "Location Tracking Event"
-        }
-    }
-    
+
     enum XDM {
         enum Key {
             static let EVENT_TYPE = "eventType"
             static let XDM = "xdm"
-            
+
             static let META = "meta"
             static let COLLECT = "collect"
             static let DATASET_ID = "datasetId"
-            
+
             static let PLACE_CONTEXT = "placeContext"
             static let POI_INTERACTION = "POIinteraction"
             static let POI_DETAIL = "poiDetail"
@@ -171,30 +166,31 @@ enum PlacesConstants {
             static let GEO = "geo"
             static let CIRCLE = "circle"
             static let COORDINATES = "coordinates"
-            
+
             static let POI_ID = "poiID"
             static let NAME = "name"
             static let LATITUDE = "latitude"
             static let LONGITUDE = "longitude"
             static let RADIUS = "radius"
-            
+
             static let COUNTRY_CODE = "countryCode"
             static let CITY = "city"
             static let POSTAL_CODE = "postalCode"
             static let STATE_PROVINCE = "stateProvince"
             static let CATEGORY = "category"
-            
+
             static let METADATA = "metadata"
             static let LIST = "list"
             static let KEY = "key"
             static let VALUE = "value"
-            
+
             static let POIENTRIES = "poiEntries"
             static let POIEXITS = "poiExits"
             static let ID = "id"
-            
+
             static let NAMESPACE = "_aemonacpprodcampaign"
         }
+
         enum Location {
             enum EventType {
                 static let ENTRY = "location.entry"
@@ -202,12 +198,12 @@ enum PlacesConstants {
             }
         }
     }
-    
+
     /* Messaging's config, to pickup its AEP dataset id. */
     enum SharedState {
         enum Configuration {
             static let NAME = "com.adobe.module.configuration"
-            
+
             // Messaging dataset ids
             static let EXPERIENCE_EVENT_DATASET = "messaging.eventDataset"
         }

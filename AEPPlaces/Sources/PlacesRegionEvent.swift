@@ -43,7 +43,7 @@ public enum PlacesRegionEvent: Int {
             return nil
         }
     }
-    
+
     public func toExperienceEventType() -> String {
         switch self {
         case .entry:

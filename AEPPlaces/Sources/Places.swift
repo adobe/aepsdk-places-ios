@@ -20,6 +20,7 @@ import Foundation
 @objc(AEPMobilePlaces)
 public class Places: NSObject, Extension {
     // MARK: - internal properties
+
     var nearbyPois: [String: PointOfInterest] = [:]
     var userWithinPois: [String: PointOfInterest] = [:]
     var currentPoi: PointOfInterest?
@@ -31,11 +32,13 @@ public class Places: NSObject, Extension {
     var authStatus: CLAuthorizationStatus
     var accuracy: CLAccuracyAuthorization?
     var privacyStatus: PrivacyStatus
-    var dataStore: NamedCollectionDataStore = NamedCollectionDataStore(name: PlacesConstants.UserDefaults.PLACES_DATA_STORE_NAME)
+    var dataStore: NamedCollectionDataStore = .init(name: PlacesConstants.UserDefaults.PLACES_DATA_STORE_NAME)
     var placesQueryService = PlacesQueryService()
 
     // MARK: - Extension protocol
+
     // MARK: properties
+
     public static var extensionVersion: String = PlacesConstants.EXTENSION_VERSION
     public var name: String = PlacesConstants.EXTENSION_NAME
     public var friendlyName: String = PlacesConstants.FRIENDLY_NAME
@@ -43,6 +46,7 @@ public class Places: NSObject, Extension {
     public var runtime: ExtensionRuntime
 
     // MARK: methods
+
     public required init?(runtime: ExtensionRuntime) {
         self.runtime = runtime
 
@@ -58,7 +62,7 @@ public class Places: NSObject, Extension {
     /// internal initializer only meant for use when unit testing - allows mocking of the query service
     internal init(runtime: ExtensionRuntime, queryService: PlacesQueryService) {
         self.runtime = runtime
-        self.placesQueryService = queryService
+        placesQueryService = queryService
 
         lastKnownCoordinate = CLLocationCoordinate2D(latitude: PlacesConstants.DefaultValues.INVALID_LAT_LON,
                                                      longitude: PlacesConstants.DefaultValues.INVALID_LAT_LON)
@@ -81,10 +85,10 @@ public class Places: NSObject, Extension {
         createSharedState(data: getSharedStateData(), event: nil)
     }
 
-    public func onUnregistered() { }
+    public func onUnregistered() {}
 
     public func readyForEvent(_ event: Event) -> Bool {
-        return getSharedState(extensionName: PlacesConstants.EventDataKey.Configuration.SHARED_STATE_NAME, event: event)?.status == .set
+        getSharedState(extensionName: PlacesConstants.EventDataKey.Configuration.SHARED_STATE_NAME, event: event)?.status == .set
     }
 
     // MARK: - Listener Methods
@@ -93,7 +97,6 @@ public class Places: NSObject, Extension {
     ///
     /// - Parameter event: the SharedState update `Event`
     private func handleSharedStateUpdate(_ event: Event) {
-
         // for now, we are only handling configuration shared state updates
         if !event.isConfigSharedStateChange {
             return
@@ -205,7 +208,7 @@ public class Places: NSObject, Extension {
             }
             let eventData: [String: Any] = [
                 PlacesConstants.EventDataKey.Places.RESPONSE_STATUS: result.response.rawValue,
-                PlacesConstants.SharedStateKey.NEARBY_POIS: nearbyPoiArray
+                PlacesConstants.SharedStateKey.NEARBY_POIS: nearbyPoiArray,
             ]
 
             self.dispatchResponseEventWith(name: PlacesConstants.EventName.Response.GET_NEARBY_PLACES,
@@ -253,7 +256,7 @@ public class Places: NSObject, Extension {
         processRegionEvent(regionEventType, forPoi: triggeringPoi)
 
         dispatchRegionEventFor(poi: triggeringPoi, withRegionEventType: regionEventType)
-        
+
         sendExperienceEventToEdge(event: event, poi: triggeringPoi, withRegionEventType: regionEventType)
     }
 
@@ -268,10 +271,10 @@ public class Places: NSObject, Extension {
         Log.trace(label: PlacesConstants.LOG_TAG, "Getting user-within Points of Interest.")
 
         // convert the map of userWithinPois to an array to put in the eventData
-        let userWithinPoiArray = userWithinPois.values.map({$0.mapValue})
+        let userWithinPoiArray = userWithinPois.values.map { $0.mapValue }
 
         let eventData = [
-            PlacesConstants.SharedStateKey.USER_WITHIN_POIS: userWithinPoiArray
+            PlacesConstants.SharedStateKey.USER_WITHIN_POIS: userWithinPoiArray,
         ]
 
         dispatchResponseEventWith(name: PlacesConstants.EventName.Response.GET_USER_WITHIN_PLACES,
@@ -285,7 +288,7 @@ public class Places: NSObject, Extension {
 
         let eventData = [
             PlacesConstants.EventDataKey.Places.LATITUDE: lastKnownCoordinate.latitude,
-            PlacesConstants.EventDataKey.Places.LONGITUDE: lastKnownCoordinate.longitude
+            PlacesConstants.EventDataKey.Places.LONGITUDE: lastKnownCoordinate.longitude,
         ]
 
         dispatchResponseEventWith(name: PlacesConstants.EventName.Response.GET_LAST_KNOWN_LOCATION,
@@ -326,7 +329,7 @@ public class Places: NSObject, Extension {
     private func dispatchRegionEventFor(poi: PointOfInterest, withRegionEventType type: PlacesRegionEvent) {
         let eventData: [String: Any] = [
             PlacesConstants.EventDataKey.Places.TRIGGERING_REGION: poi.mapValue,
-            PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: type.stringValue
+            PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: type.stringValue,
         ]
         let event = Event(name: PlacesConstants.EventName.Response.PROCESS_REGION_EVENT,
                           type: EventType.places, source: EventSource.responseContent, data: eventData)

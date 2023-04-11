@@ -10,29 +10,30 @@
  governing permissions and limitations under the License.
  */
 
-import Foundation
 import AEPCore
+import Foundation
 
 /// Extension class providing streamlined access to Places data in `SharedStateResult` objects.
 extension SharedStateResult {
     // MARK: - Configuration
+
     var placesLibraries: [[String: Any]]? {
-        return value?[PlacesConstants.EventDataKey.Configuration.PLACES_LIBRARIES] as? [[String: Any]]
+        value?[PlacesConstants.EventDataKey.Configuration.PLACES_LIBRARIES] as? [[String: Any]]
     }
 
     var placesEndpoint: String? {
-        return value?[PlacesConstants.EventDataKey.Configuration.PLACES_ENDPOINT] as? String
+        value?[PlacesConstants.EventDataKey.Configuration.PLACES_ENDPOINT] as? String
     }
 
     var placesMembershipTtl: TimeInterval? {
-        return value?[PlacesConstants.EventDataKey.Configuration.PLACES_MEMBERSHIP_TTL] as? TimeInterval
+        value?[PlacesConstants.EventDataKey.Configuration.PLACES_MEMBERSHIP_TTL] as? TimeInterval
     }
 
     var globalPrivacy: PrivacyStatus {
-        return PrivacyStatus(rawValue: value?[PlacesConstants.EventDataKey.Configuration.GLOBAL_CONFIG_PRIVACY] as? String ?? "unknown")!
+        PrivacyStatus(rawValue: value?[PlacesConstants.EventDataKey.Configuration.GLOBAL_CONFIG_PRIVACY] as? String ?? "unknown")!
     }
-    
+
     var experienceEventDataset: String? {
-        return value?[PlacesConstants.SharedState.Configuration.EXPERIENCE_EVENT_DATASET] as? String
+        value?[PlacesConstants.SharedState.Configuration.EXPERIENCE_EVENT_DATASET] as? String
     }
 }

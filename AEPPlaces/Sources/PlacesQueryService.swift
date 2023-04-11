@@ -10,12 +10,11 @@
  governing permissions and limitations under the License.
  */
 
-import Foundation
 import AEPServices
+import Foundation
 
 /// Owns methods interfacing with the Places Edge Query Service.
 class PlacesQueryService {
-
     /// Retrieves a list of nearby `PointsOfInterest` from the Places Edge Query Service.
     ///
     /// The `PlacesQueryServiceResult` passed to the closure will contain a `PlacesQueryResponseCode` value as well as
@@ -46,7 +45,7 @@ class PlacesQueryService {
         components.queryItems?.append(contentsOf: [
             URLQueryItem(name: PlacesConstants.QueryService.Json.LATITUDE, value: String(lat)),
             URLQueryItem(name: PlacesConstants.QueryService.Json.LONGITUDE, value: String(lon)),
-            URLQueryItem(name: PlacesConstants.QueryService.Json.LIMIT, value: String(count))
+            URLQueryItem(name: PlacesConstants.QueryService.Json.LIMIT, value: String(count)),
         ])
 
         guard let url = components.url else {
@@ -119,7 +118,7 @@ class PlacesQueryService {
     /// - Parameter libraries: an array of `PlacesLibrary` objects from which the URL parameter will be generated
     /// - Returns: `[URLQueryItem]` containing Places Library IDs
     private func getURLQueryItemsFor(libraries: [PlacesLibrary]) -> [URLQueryItem] {
-        return libraries.map {
+        libraries.map {
             URLQueryItem(name: "library", value: $0.id)
         }
     }

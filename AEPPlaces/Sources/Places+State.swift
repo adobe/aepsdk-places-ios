@@ -10,8 +10,8 @@
  governing permissions and limitations under the License.
  */
 
-import Foundation
 import AEPServices
+import Foundation
 
 /// Helps maintain the current state for the Places extension, including managing persistence and shared state
 extension Places {
@@ -192,7 +192,7 @@ extension Places {
 
     /// Determines whether the current Places membership is still valid
     private var membershipDataIsValid: Bool {
-        return Date().timeIntervalSince1970 < membershipValidUntil ?? 0
+        Date().timeIntervalSince1970 < membershipValidUntil ?? 0
     }
 
     /// Loops through `userWithinPois` to appropriately set `currentPoi`

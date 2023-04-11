@@ -49,23 +49,23 @@ extension NamedCollectionDataStore {
     }
 
     var currentPoi: PointOfInterest? {
-        return try? PointOfInterest(jsonString: getString(key: PlacesConstants.UserDefaults.PERSISTED_CURRENT_POI) ?? "")
+        try? PointOfInterest(jsonString: getString(key: PlacesConstants.UserDefaults.PERSISTED_CURRENT_POI) ?? "")
     }
 
     var lastEnteredPoi: PointOfInterest? {
-        return try? PointOfInterest(jsonString: getString(key: PlacesConstants.UserDefaults.PERSISTED_LAST_ENTERED_POI) ?? "")
+        try? PointOfInterest(jsonString: getString(key: PlacesConstants.UserDefaults.PERSISTED_LAST_ENTERED_POI) ?? "")
     }
 
     var lastExitedPoi: PointOfInterest? {
-        return try? PointOfInterest(jsonString: getString(key: PlacesConstants.UserDefaults.PERSISTED_LAST_EXITED_POI) ?? "")
+        try? PointOfInterest(jsonString: getString(key: PlacesConstants.UserDefaults.PERSISTED_LAST_EXITED_POI) ?? "")
     }
 
     var lastKnownLatitude: Double {
-        return getDouble(key: PlacesConstants.UserDefaults.PERSISTED_LATITUDE) ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
+        getDouble(key: PlacesConstants.UserDefaults.PERSISTED_LATITUDE) ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
     }
 
     var lastKnownLongitude: Double {
-        return getDouble(key: PlacesConstants.UserDefaults.PERSISTED_LONGITUDE) ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
+        getDouble(key: PlacesConstants.UserDefaults.PERSISTED_LONGITUDE) ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
     }
 
     var accuracy: CLAccuracyAuthorization? {
@@ -81,11 +81,11 @@ extension NamedCollectionDataStore {
     }
 
     var authStatus: CLAuthorizationStatus {
-        return CLAuthorizationStatus.init(fromString: getString(key: PlacesConstants.UserDefaults.PERSISTED_AUTH_STATUS) ?? "")
+        CLAuthorizationStatus(fromString: getString(key: PlacesConstants.UserDefaults.PERSISTED_AUTH_STATUS) ?? "")
     }
 
     var membershipValidUntil: TimeInterval? {
-        return getDouble(key: PlacesConstants.UserDefaults.PERSISTED_MEMBERSHIP_VALID_UNTIL)
+        getDouble(key: PlacesConstants.UserDefaults.PERSISTED_MEMBERSHIP_VALID_UNTIL)
     }
 
     // MARK: - Setters

@@ -18,11 +18,10 @@ import Foundation
 /// Defines the public interface for the Places extension.
 @objc
 public extension Places {
-
     /// Clears out the client-side data for Places in shared state, local storage, and in-memory.
     static func clear() {
         let eventData: [String: Any] = [
-            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.RESET
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.RESET,
         ]
         let event = Event(name: PlacesConstants.EventName.Request.RESET,
                           type: EventType.places,
@@ -39,7 +38,7 @@ public extension Places {
     /// - Parameter closure: called with an array of `PointOfInterest` objects that represent the user-within POIs
     static func getCurrentPointsOfInterest(_ closure: @escaping ([PointOfInterest]) -> Void) {
         let eventData: [String: Any] = [
-            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_USER_WITHIN_PLACES
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_USER_WITHIN_PLACES,
         ]
 
         let event = Event(name: PlacesConstants.EventName.Request.GET_USER_WITHIN_PLACES,
@@ -76,7 +75,7 @@ public extension Places {
     ///                      the `Places` extension
     static func getLastKnownLocation(_ closure: @escaping (CLLocation?) -> Void) {
         let eventData: [String: Any] = [
-            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_LAST_KNOWN_LOCATION
+            PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_LAST_KNOWN_LOCATION,
         ]
 
         let event = Event(name: PlacesConstants.EventName.Request.GET_LAST_KNOWN_LOCATION,
@@ -109,7 +108,7 @@ public extension Places {
             PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_NEARBY_PLACES,
             PlacesConstants.EventDataKey.Places.LATITUDE: location.coordinate.latitude,
             PlacesConstants.EventDataKey.Places.LONGITUDE: location.coordinate.longitude,
-            PlacesConstants.EventDataKey.Places.COUNT: limit
+            PlacesConstants.EventDataKey.Places.COUNT: limit,
         ]
 
         let event = Event(name: PlacesConstants.EventName.Request.GET_NEARBY_PLACES,
@@ -152,7 +151,7 @@ public extension Places {
         let eventData: [String: Any] = [
             PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.PROCESS_REGION_EVENT,
             PlacesConstants.EventDataKey.Places.REGION_ID: region.identifier,
-            PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: regionEvent.stringValue
+            PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: regionEvent.stringValue,
         ]
 
         let event = Event(name: PlacesConstants.EventName.Request.PROCESS_REGION_EVENT,
@@ -178,7 +177,7 @@ public extension Places {
     static func setAccuracyAuthorization(_ accuracy: CLAccuracyAuthorization) {
         let eventData: [String: Any] = [
             PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.SET_ACCURACY,
-            PlacesConstants.EventDataKey.Places.ACCURACY: accuracy.stringValue
+            PlacesConstants.EventDataKey.Places.ACCURACY: accuracy.stringValue,
         ]
 
         let event = Event(name: PlacesConstants.EventName.Request.SET_ACCURACY,
@@ -199,7 +198,7 @@ public extension Places {
     static func setAuthorizationStatus(_ status: CLAuthorizationStatus) {
         let eventData: [String: Any] = [
             PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.SET_AUTHORIZATION_STATUS,
-            PlacesConstants.EventDataKey.Places.AUTH_STATUS: status.stringValue
+            PlacesConstants.EventDataKey.Places.AUTH_STATUS: status.stringValue,
         ]
 
         let event = Event(name: PlacesConstants.EventName.Request.SET_AUTHORIZATION_STATUS,

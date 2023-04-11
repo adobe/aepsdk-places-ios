@@ -10,9 +10,9 @@
  governing permissions and limitations under the License.
  */
 
-import Foundation
-import AEPServices
 import AEPCore
+import AEPServices
+import Foundation
 
 /// Contains information required for Places to operate.
 /// Data is retrieved from `Configuration` Shared State.
@@ -61,6 +61,6 @@ struct PlacesConfiguration: Codable {
 extension PlacesConfiguration {
     /// PlacesConfiguration is valid if it contains at least one library and an endpoint
     var isValid: Bool {
-        return !libraries.isEmpty && !endpoint.isEmpty
+        !libraries.isEmpty && !endpoint.isEmpty
     }
 }

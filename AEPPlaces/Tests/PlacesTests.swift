@@ -97,14 +97,16 @@ class PlacesTests: XCTestCase {
         return configEvent
     }
     
-    func getConfigSharedStateEventData(privacy: PrivacyStatus) -> [String : Any] {
+    func getConfigSharedStateEventData(privacy: PrivacyStatus,
+                                       datasetId: String? = "datasetId") -> [String : Any] {
         return [
             PlacesConstants.EventDataKey.Configuration.GLOBAL_CONFIG_PRIVACY: privacy.rawValue,
             PlacesConstants.EventDataKey.Configuration.PLACES_ENDPOINT: "test.places.endpoint",
             PlacesConstants.EventDataKey.Configuration.PLACES_MEMBERSHIP_TTL: 60,
             PlacesConstants.EventDataKey.Configuration.PLACES_LIBRARIES: [
                 [PlacesConstants.EventDataKey.Configuration.PLACES_LIBRARY_ID: "libraryId"]
-            ]
+            ],
+            PlacesConstants.SharedState.Configuration.EXPERIENCE_EVENT_DATASET: datasetId as Any
         ] as [String : Any]
     }
     
@@ -127,6 +129,24 @@ class PlacesTests: XCTestCase {
                                         ], .set))
     }
     
+    func prepareConfigWithDataset(datasetId: String?) {
+        mockRuntime.simulateSharedState(for: PlacesConstants.EventDataKey.Configuration.SHARED_STATE_NAME,
+                                        data: (getConfigSharedStateEventData(privacy: PrivacyStatus.optedIn, datasetId: datasetId), .set))
+    }
+    
+    func prepareConfigMissingDataset() {
+        mockRuntime.simulateSharedState(for: PlacesConstants.EventDataKey.Configuration.SHARED_STATE_NAME,
+                                        data: ([
+                                            PlacesConstants.EventDataKey.Configuration.GLOBAL_CONFIG_PRIVACY: PrivacyStatus.optedIn.rawValue,
+                                            PlacesConstants.EventDataKey.Configuration.PLACES_ENDPOINT: "test.places.endpoint",
+                                            PlacesConstants.EventDataKey.Configuration.PLACES_MEMBERSHIP_TTL: 60,
+                                            PlacesConstants.EventDataKey.Configuration.PLACES_LIBRARIES: [
+                                                [PlacesConstants.EventDataKey.Configuration.PLACES_LIBRARY_ID: "libraryId"]
+                                            ]
+                                        ], .set))
+    }
+    
+    
     func getGetNearbyPlacesRequestEvent(_ data: [String: Any]? = nil) -> Event {
         return Event(name: PlacesConstants.EventName.Request.GET_NEARBY_PLACES,
                      type: EventType.places,
@@ -139,13 +159,14 @@ class PlacesTests: XCTestCase {
                      ])
     }
     
-    func getProcessRegionEvent(_ data: [String: Any]? = nil) -> Event {
+    func getProcessRegionEvent(_ data: [String: Any]? = nil,
+                               regionEventType: String = PlacesRegionEvent.entry.stringValue) -> Event {
         return Event(name: PlacesConstants.EventName.Request.PROCESS_REGION_EVENT,
                      type: EventType.places,
                      source: EventSource.requestContent,
                      data: data ?? [
                         PlacesConstants.EventDataKey.Places.REGION_ID: "1234",
-                        PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: PlacesRegionEvent.entry.stringValue,
+                        PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE: regionEventType,
                         PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.PROCESS_REGION_EVENT
                      ])
     }
@@ -601,7 +622,7 @@ class PlacesTests: XCTestCase {
     
     // MARK: - handleProcessRegionEventRequest
     
-    func testHandleProcessRegionEventRequest() throws {
+    func testHandleProcessRegionEventRequestEntry() throws {
         // setup
         prepareConfig(privacy: .optedIn)
         let requestingEvent = getProcessRegionEvent()
@@ -610,9 +631,9 @@ class PlacesTests: XCTestCase {
         mockRuntime.simulateComingEvents(requestingEvent)
         
         // verify
-        XCTAssertEqual(1, mockRuntime.dispatchedEvents.count)
+        XCTAssertEqual(2, mockRuntime.dispatchedEvents.count)
         
-        // validate response event
+        // validate places region response event
         let responseEvent = mockRuntime.firstEvent!
         XCTAssertEqual(EventType.places, responseEvent.type)
         XCTAssertEqual(EventSource.responseContent, responseEvent.source)
@@ -643,6 +664,138 @@ class PlacesTests: XCTestCase {
         let sharedState = mockRuntime.secondSharedState
         let sharedLastEnteredPoi = sharedState?[PlacesConstants.SharedStateKey.LAST_ENTERED_POI] as? [String: Any]
         XCTAssertEqual("1234", sharedLastEnteredPoi?[PlacesConstants.EventDataKey.Places.REGION_ID] as? String)
+        
+        // validate experience edge request event
+        let edgeRequestEvent = mockRuntime.secondEvent!
+        XCTAssertEqual(EventType.edge, edgeRequestEvent.type)
+        XCTAssertEqual(EventSource.requestContent, edgeRequestEvent.source)
+        XCTAssertEqual(PlacesConstants.EventName.Request.LOCATION_TRACKING, edgeRequestEvent.name)
+        
+        let dispatchedEdgeEventData = edgeRequestEvent.data!
+        let xdm = dispatchedEdgeEventData[PlacesConstants.XDM.Key.XDM] as! [String: Any]
+        XCTAssertEqual("location.entry", xdm[PlacesConstants.XDM.Key.EVENT_TYPE] as! String)
+        
+        let placesContext = xdm[PlacesConstants.XDM.Key.PLACE_CONTEXT] as! [String: Any]
+        let poiInteraction = placesContext[PlacesConstants.XDM.Key.POI_INTERACTION] as! [String: Any]
+        
+        let poiDetail = poiInteraction[PlacesConstants.XDM.Key.POI_DETAIL] as! [String: Any]
+        XCTAssertEqual("1234", poiDetail[PlacesConstants.XDM.Key.POI_ID] as! String)
+        XCTAssertEqual("myplace", poiDetail[PlacesConstants.XDM.Key.NAME] as! String)
+        
+        let metadata = poiDetail[PlacesConstants.XDM.Key.METADATA] as! [String: Any]
+        let metadataList = metadata[PlacesConstants.XDM.Key.LIST] as! [[String: Any]]
+        XCTAssertEqual(1, metadataList.count)
+        XCTAssertEqual("key1", metadataList[0][PlacesConstants.XDM.Key.KEY] as! String)
+        XCTAssertEqual("value1", metadataList[0][PlacesConstants.XDM.Key.VALUE] as! String)
+        
+        let geoInteractionDetails = poiDetail[PlacesConstants.XDM.Key.GEO_INTERACTION_DETAILS] as! [String: Any]
+        let geoShape = geoInteractionDetails[PlacesConstants.XDM.Key.SCHEMA] as! [String: Any]
+        let circle = geoShape[PlacesConstants.XDM.Key.CIRCLE] as! [String: Any]
+        let circleSchema = circle[PlacesConstants.XDM.Key.SCHEMA] as! [String: Any]
+        XCTAssertEqual(500, circleSchema[PlacesConstants.XDM.Key.RADIUS] as! Int)
+        
+        let coordinates = circleSchema[PlacesConstants.XDM.Key.COORDINATES] as! [String: Any]
+        let coordinatesSchema = coordinates[PlacesConstants.XDM.Key.SCHEMA] as! [String: Any]
+        XCTAssertEqual(12.34, coordinatesSchema[PlacesConstants.XDM.Key.LATITUDE] as! Double)
+        XCTAssertEqual(23.45, coordinatesSchema[PlacesConstants.XDM.Key.LONGITUDE] as! Double)
+        
+        let poiEntries = poiInteraction[PlacesConstants.XDM.Key.POIENTRIES] as! [String: Any]
+        XCTAssertEqual("1234", poiEntries[PlacesConstants.XDM.Key.ID] as! String)
+        XCTAssertEqual(1, poiEntries[PlacesConstants.XDM.Key.VALUE] as! Int)
+
+        let meta = dispatchedEdgeEventData[PlacesConstants.XDM.Key.META] as! [String: Any]
+        let collect = meta[PlacesConstants.XDM.Key.COLLECT] as! [String: Any]
+        XCTAssertEqual("datasetId", collect[PlacesConstants.XDM.Key.DATASET_ID] as! String)
+
+        XCTAssertEqual(["xdm.eventType"], edgeRequestEvent.mask)
+    }
+    
+    func testHandleProcessRegionEventRequestExit() throws {
+        // setup
+        prepareConfig(privacy: .optedIn)
+        let requestingEvent = getProcessRegionEvent(regionEventType: PlacesRegionEvent.exit.stringValue)
+        
+        // test
+        mockRuntime.simulateComingEvents(requestingEvent)
+        
+        // verify
+        XCTAssertEqual(2, mockRuntime.dispatchedEvents.count)
+        
+        // validate places region response event
+        let responseEvent = mockRuntime.firstEvent!
+        XCTAssertEqual(EventType.places, responseEvent.type)
+        XCTAssertEqual(EventSource.responseContent, responseEvent.source)
+        XCTAssertEqual(PlacesConstants.EventName.Response.PROCESS_REGION_EVENT, responseEvent.name)
+        let dispatchedData = responseEvent.data!
+        
+        let regionEventType = PlacesRegionEvent.fromString(dispatchedData[PlacesConstants.EventDataKey.Places.REGION_EVENT_TYPE] as! String)
+        XCTAssertEqual(.exit, regionEventType)
+        
+        let triggeringRegion = dispatchedData[PlacesConstants.EventDataKey.Places.TRIGGERING_REGION] as! [String: Any]
+        XCTAssertEqual("1234", triggeringRegion[PlacesConstants.EventDataKey.Places.REGION_ID] as? String)
+        XCTAssertEqual("myplace", triggeringRegion[PlacesConstants.EventDataKey.Places.REGION_NAME] as? String)
+        XCTAssertEqual(12.34, triggeringRegion[PlacesConstants.EventDataKey.Places.LATITUDE] as? Double)
+        XCTAssertEqual(23.45, triggeringRegion[PlacesConstants.EventDataKey.Places.LONGITUDE] as? Double)
+        XCTAssertEqual(500, triggeringRegion[PlacesConstants.EventDataKey.Places.RADIUS] as? Int)
+        XCTAssertEqual(25, triggeringRegion[PlacesConstants.EventDataKey.Places.WEIGHT] as? Int)
+        XCTAssertEqual("mylib", triggeringRegion[PlacesConstants.EventDataKey.Places.LIBRARY_ID] as? String)
+        XCTAssertTrue(triggeringRegion[PlacesConstants.EventDataKey.Places.USER_IS_WITHIN] as? Bool ?? false)
+        let triggeringMetaData = triggeringRegion[PlacesConstants.EventDataKey.Places.REGION_META_DATA] as! [String: Any]
+        XCTAssertEqual("value1", triggeringMetaData["key1"] as? String)
+        
+        // validate state updates
+        XCTAssertNil(places.currentPoi)
+        XCTAssertEqual("1234", places.lastExitedPoi?.identifier)
+        
+        // validate shared state update
+        XCTAssertEqual(2, mockRuntime.createdSharedStates.count)  // first from onRegistered, second as result of this request
+        let sharedState = mockRuntime.secondSharedState
+        let sharedLastEnteredPoi = sharedState?[PlacesConstants.SharedStateKey.LAST_ENTERED_POI] as? [String: Any]
+        XCTAssertEqual("1234", sharedLastEnteredPoi?[PlacesConstants.EventDataKey.Places.REGION_ID] as? String)
+        
+        // validate experience edge request event
+        let edgeRequestEvent = mockRuntime.secondEvent!
+        XCTAssertEqual(EventType.edge, edgeRequestEvent.type)
+        XCTAssertEqual(EventSource.requestContent, edgeRequestEvent.source)
+        XCTAssertEqual(PlacesConstants.EventName.Request.LOCATION_TRACKING, edgeRequestEvent.name)
+        
+        let dispatchedEdgeEventData = edgeRequestEvent.data!
+        let xdm = dispatchedEdgeEventData[PlacesConstants.XDM.Key.XDM] as! [String: Any]
+        XCTAssertEqual("location.exit", xdm[PlacesConstants.XDM.Key.EVENT_TYPE] as! String)
+        
+        let placesContext = xdm[PlacesConstants.XDM.Key.PLACE_CONTEXT] as! [String: Any]
+        let poiInteraction = placesContext[PlacesConstants.XDM.Key.POI_INTERACTION] as! [String: Any]
+        
+        let poiDetail = poiInteraction[PlacesConstants.XDM.Key.POI_DETAIL] as! [String: Any]
+        XCTAssertEqual("1234", poiDetail[PlacesConstants.XDM.Key.POI_ID] as! String)
+        XCTAssertEqual("myplace", poiDetail[PlacesConstants.XDM.Key.NAME] as! String)
+        
+        let metadata = poiDetail[PlacesConstants.XDM.Key.METADATA] as! [String: Any]
+        let metadataList = metadata[PlacesConstants.XDM.Key.LIST] as! [[String: Any]]
+        XCTAssertEqual(1, metadataList.count)
+        XCTAssertEqual("key1", metadataList[0][PlacesConstants.XDM.Key.KEY] as! String)
+        XCTAssertEqual("value1", metadataList[0][PlacesConstants.XDM.Key.VALUE] as! String)
+        
+        let geoInteractionDetails = poiDetail[PlacesConstants.XDM.Key.GEO_INTERACTION_DETAILS] as! [String: Any]
+        let geoShape = geoInteractionDetails[PlacesConstants.XDM.Key.SCHEMA] as! [String: Any]
+        let circle = geoShape[PlacesConstants.XDM.Key.CIRCLE] as! [String: Any]
+        let circleSchema = circle[PlacesConstants.XDM.Key.SCHEMA] as! [String: Any]
+        XCTAssertEqual(500, circleSchema[PlacesConstants.XDM.Key.RADIUS] as! Int)
+        
+        let coordinates = circleSchema[PlacesConstants.XDM.Key.COORDINATES] as! [String: Any]
+        let coordinatesSchema = coordinates[PlacesConstants.XDM.Key.SCHEMA] as! [String: Any]
+        XCTAssertEqual(12.34, coordinatesSchema[PlacesConstants.XDM.Key.LATITUDE] as! Double)
+        XCTAssertEqual(23.45, coordinatesSchema[PlacesConstants.XDM.Key.LONGITUDE] as! Double)
+        
+        let poiExits = poiInteraction[PlacesConstants.XDM.Key.POIEXITS] as! [String: Any]
+        XCTAssertEqual("1234", poiExits[PlacesConstants.XDM.Key.ID] as! String)
+        XCTAssertEqual(1, poiExits[PlacesConstants.XDM.Key.VALUE] as! Int)
+
+        let meta = dispatchedEdgeEventData[PlacesConstants.XDM.Key.META] as! [String: Any]
+        let collect = meta[PlacesConstants.XDM.Key.COLLECT] as! [String: Any]
+        XCTAssertEqual("datasetId", collect[PlacesConstants.XDM.Key.DATASET_ID] as! String)
+
+        XCTAssertEqual(["xdm.eventType"], edgeRequestEvent.mask)
     }
     
     func testHandleProcessRegionEventRequestPrivacyOptedOut() throws {
@@ -723,6 +876,51 @@ class PlacesTests: XCTestCase {
         
         // verify
         XCTAssertEqual(0, mockRuntime.dispatchedEvents.count)
+    }
+    
+    func testHandleProcessRegionEventRequestDatasetNil() throws {
+        // setup
+        prepareConfigWithDataset(datasetId: nil)
+        let requestingEvent = getProcessRegionEvent()
+        
+        // test
+        mockRuntime.simulateComingEvents(requestingEvent)
+        
+        // verify only places response event is dispatched but not edge event
+        XCTAssertEqual(1, mockRuntime.dispatchedEvents.count)
+        let responseEvent = mockRuntime.firstEvent!
+        XCTAssertEqual(EventType.places, responseEvent.type)
+        XCTAssertEqual(EventSource.responseContent, responseEvent.source)
+    }
+    
+    func testHandleProcessRegionEventRequestDatasetEmpty() throws {
+        // setup
+        prepareConfigWithDataset(datasetId: "")
+        let requestingEvent = getProcessRegionEvent()
+        
+        // test
+        mockRuntime.simulateComingEvents(requestingEvent)
+        
+        // verify only places response event is dispatched but not edge event
+        XCTAssertEqual(1, mockRuntime.dispatchedEvents.count)
+        let responseEvent = mockRuntime.firstEvent!
+        XCTAssertEqual(EventType.places, responseEvent.type)
+        XCTAssertEqual(EventSource.responseContent, responseEvent.source)
+    }
+    
+    func testHandleProcessRegionEventRequestDatasetMissing() throws {
+        // setup
+        prepareConfigMissingDataset()
+        let requestingEvent = getProcessRegionEvent()
+        
+        // test
+        mockRuntime.simulateComingEvents(requestingEvent)
+        
+        // verify only places response event is dispatched but not edge event
+        XCTAssertEqual(1, mockRuntime.dispatchedEvents.count)
+        let responseEvent = mockRuntime.firstEvent!
+        XCTAssertEqual(EventType.places, responseEvent.type)
+        XCTAssertEqual(EventSource.responseContent, responseEvent.source)
     }
     
     // MARK: - getUserWithinPlaces

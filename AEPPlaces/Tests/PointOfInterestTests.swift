@@ -110,11 +110,11 @@ class PointOfInterestTests: XCTestCase {
         XCTAssertEqual(500, poi.radius)
         XCTAssertEqual(false, poi.userIsWithin)
         XCTAssertEqual(5, poi.metaData.count)
-        XCTAssertEqual("value1", poi.metaData["stringKey"])
-        XCTAssertEqual("9", poi.metaData["intKey"])
-        XCTAssertEqual("55.2", poi.metaData["doubleKey"])
-        XCTAssertEqual("1", poi.metaData["boolKey"])
-        XCTAssertEqual("<null>", poi.metaData["nullKey"])
+        XCTAssertEqual("value1", poi.metaData["stringKey"] as! String?)
+        XCTAssertEqual("9", poi.metaData["intKey"] as! String?)
+        XCTAssertEqual("55.2", poi.metaData["doubleKey"] as! String?)
+        XCTAssertEqual("1", poi.metaData["boolKey"] as! String?)
+        XCTAssertEqual("<null>", poi.metaData["nullKey"] as! String?)
     }
     
     func testConstructorFromJsonStringEmptyJson() throws {

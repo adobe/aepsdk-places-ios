@@ -10,8 +10,8 @@
  governing permissions and limitations under the License.
  */
 
-import Foundation
 import AEPServices
+import Foundation
 
 /// Object that represents a Point of Interest created in the Adobe Places UI.
 @objc(AEPPlacesPoi)
@@ -79,23 +79,23 @@ public class PointOfInterest: NSObject {
             throw PlacesDataObjectInvalidInitialization(message: "Invalid JSON Object")
         }
 
-        self.identifier = poiInfo[PlacesConstants.QueryService.Index.ID] as? String ?? ""
-        self.name = poiInfo[PlacesConstants.QueryService.Index.NAME] as? String ?? ""
-        self.latitude = Double(poiInfo[PlacesConstants.QueryService.Index.LATITUDE] as? String ?? "") ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
-        self.longitude = Double(poiInfo[PlacesConstants.QueryService.Index.LONGITUDE] as? String ?? "") ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
-        self.radius = poiInfo[PlacesConstants.QueryService.Index.RADIUS] as? Int ?? 0
-        self.libraryId = poiInfo[PlacesConstants.QueryService.Index.LIBRARY_ID] as? String ?? ""
-        self.weight = poiInfo[PlacesConstants.QueryService.Index.WEIGHT] as? Int ?? 0
+        identifier = poiInfo[PlacesConstants.QueryService.Index.ID] as? String ?? ""
+        name = poiInfo[PlacesConstants.QueryService.Index.NAME] as? String ?? ""
+        latitude = Double(poiInfo[PlacesConstants.QueryService.Index.LATITUDE] as? String ?? "") ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
+        longitude = Double(poiInfo[PlacesConstants.QueryService.Index.LONGITUDE] as? String ?? "") ?? PlacesConstants.DefaultValues.INVALID_LAT_LON
+        radius = poiInfo[PlacesConstants.QueryService.Index.RADIUS] as? Int ?? 0
+        libraryId = poiInfo[PlacesConstants.QueryService.Index.LIBRARY_ID] as? String ?? ""
+        weight = poiInfo[PlacesConstants.QueryService.Index.WEIGHT] as? Int ?? 0
         self.userIsWithin = userIsWithin!
         let metaDataAny = jsonObject[PlacesConstants.QueryService.Json.META_DATA] as? [String: Any] ?? [:]
-        self.metaData = metaDataAny.mapValues { String(describing: $0) }
+        metaData = metaDataAny.mapValues { String(describing: $0) }
     }
 
     /// Converts and returns the contents of this `PointOfInterest` as a JSON string.
     /// If serialization fails, this method returns an empty string.
     /// - Returns: a JSON string representation of the calling object
     internal func toJsonString() -> String {
-        if let jsonData = try? JSONSerialization.data(withJSONObject: self.mapValue, options: []) {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: mapValue, options: []) {
             return String(data: jsonData, encoding: .utf8)!
         }
 
@@ -118,8 +118,8 @@ public class PointOfInterest: NSObject {
         return true
     }
 
-    public override var description: String {
-        return "<PointOfInterest> Name: \(name); ID: \(identifier); Center: (\(latitude), \(longitude)); Radius: \(radius) m"
+    override public var description: String {
+        "<PointOfInterest> Name: \(name); ID: \(identifier); Center: (\(latitude), \(longitude)); Radius: \(radius) m"
     }
 }
 
@@ -127,7 +127,7 @@ extension PointOfInterest {
     /// Determines if two `PointOfInterest` objects have the same identifier.
     /// - Returns: true if both objects have the same value for `identifier`
     static func == (lhs: PointOfInterest, rhs: PointOfInterest) -> Bool {
-        return lhs.identifier == rhs.identifier
+        lhs.identifier == rhs.identifier
     }
 
     var mapValue: [String: Any] {

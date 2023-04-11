@@ -10,8 +10,8 @@
  governing permissions and limitations under the License.
  */
 
-import Foundation
 import AEPServices
+import Foundation
 
 /// Contains information defining a `PlacesLibrary`.
 /// `PlacesLibrary` structs are primarily used in `PlacesConfiguration`.

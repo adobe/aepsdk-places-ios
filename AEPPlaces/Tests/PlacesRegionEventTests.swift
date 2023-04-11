@@ -70,4 +70,28 @@ class PlacesRegionEventTests: XCTestCase {
         XCTAssertEqual("entry", PlacesRegionEvent.entry.stringValue)
         XCTAssertEqual("exit", PlacesRegionEvent.exit.stringValue)
     }
+    
+    func testToExperienceEventTypeEntry() throws {
+        // setup
+        let entryEvent = PlacesRegionEvent(rawValue: 0)
+        
+        // verify
+        XCTAssertEqual(PlacesConstants.XDM.Location.EventType.ENTRY, entryEvent?.toExperienceEventType())
+    }
+    
+    func testToExperienceEventTypeExit() throws {
+        // setup
+        let entryEvent = PlacesRegionEvent(rawValue: 1)
+        
+        // verify
+        XCTAssertEqual(PlacesConstants.XDM.Location.EventType.EXIT, entryEvent?.toExperienceEventType())
+    }
+    
+    func testToExperienceEventTypeInvalid() throws {
+        // setup
+        let entryEvent = PlacesRegionEvent(rawValue: 552)
+        
+        // verify
+        XCTAssertNil(entryEvent?.toExperienceEventType())
+    }
 }

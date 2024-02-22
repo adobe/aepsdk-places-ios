@@ -11,7 +11,7 @@ Adobe Experience Platform Places Extension is an extension for the [Adobe Experi
 The AEPPlaces extension allows you to track geolocation events as defined in the Adobe Places UI and in Adobe Launch rules.
 
 ## Requirements
-- Xcode 14.1
+- Xcode 15
 - Swift 5.1 or newer
 
 ## Installation
@@ -53,7 +53,7 @@ Alternatively, if your project has a `Package.swift` file, you can add AEPPlaces
 
 ```
 dependencies: [
-    .package(url: "https://github.com/adobe/aepsdk-places-ios.git", .upToNextMajor(from: "4.0.0"))
+    .package(url: "https://github.com/adobe/aepsdk-places-ios.git", .upToNextMajor(from: "5.0.0"))
 ],
 targets: [
     .target(name: "YourTarget",

@@ -8,6 +8,7 @@ SCHEME_NAME_XCFRAMEWORK = AEPPlacesXCF
 
 SIMULATOR_ARCHIVE_PATH = $(CURRENT_DIRECTORY)/build/ios_simulator.xcarchive/Products/Library/Frameworks/
 IOS_ARCHIVE_PATH = $(CURRENT_DIRECTORY)/build/ios.xcarchive/Products/Library/Frameworks/
+IOS_DESTINATION = 'platform=iOS Simulator,name=iPhone 15'
 
 setup:
 	(pod install)
@@ -47,7 +48,7 @@ test:
 	@echo "######################################################################"
 	@echo "### Unit Testing iOS"
 	@echo "######################################################################"
-	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'platform=iOS Simulator,name=iPhone 14' -derivedDataPath build/out -enableCodeCoverage YES
+	xcodebuild test -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination $(IOS_DESTINATION) -derivedDataPath build/out -enableCodeCoverage YES
 
 install-githook:
 	./Scripts/git-hooks/setup.sh
@@ -65,8 +66,8 @@ lint:
 	./Pods/SwiftLint/swiftlint lint $(PROJECT_NAME)/Sources
 
 build-test-apps:
-	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -scheme $(APP_NAME) -destination 'platform=iOS Simulator,name=iPhone 8'
-	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -scheme $(APP_NAME_OBJC) -destination 'platform=iOS Simulator,name=iPhone 8'
+	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -scheme $(APP_NAME) -destination $(IOS_DESTINATION)
+	xcodebuild -workspace $(PROJECT_NAME).xcworkspace -scheme $(APP_NAME_OBJC) -destination $(IOS_DESTINATION)
 
 # make check-version VERSION=4.0.0
 check-version:

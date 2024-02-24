@@ -12,8 +12,9 @@
 
 import XCTest
 @testable import AEPPlaces
+import AEPTestUtils
 
-class PlacesLibraryTests: XCTestCase {
+class PlacesLibraryTests: XCTestCase, AnyCodableAsserts {
     
     static let mockLibraryId = "552"
     static let mockLibraryName = "myLibrary"
@@ -116,7 +117,7 @@ class PlacesLibraryTests: XCTestCase {
         let jsonString = library.toJsonString()
         
         // verify
-        XCTAssertEqual(expectedString, jsonString)
+        assertExactMatch(expected: expectedString.toAnyCodable()!, actual: jsonString?.toAnyCodable(), pathOptions: [])
     }
     
     

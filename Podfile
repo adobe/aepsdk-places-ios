@@ -68,7 +68,7 @@ end
 
 target 'AEPPlacesTests' do
     dev_main
-    pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-testutils-ios.git', :tag => '5.0.0'
+    pod 'AEPTestUtils', :git => 'https://github.com/adobe/aepsdk-core-ios.git', :tag => 'testutils-5.6.0'
 end
 
 target 'PlacesTestApp' do

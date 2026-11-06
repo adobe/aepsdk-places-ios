@@ -60,7 +60,7 @@ install-githook:
 format: swift-format lint-autocorrect
 
 check-format:
-	swiftformat --lint $(PROJECT_NAME)/Sources --swiftversion 5.1
+	swiftformat --lint $(PROJECT_NAME)/Sources --swiftversion 5.10
 
 
 lint-autocorrect:

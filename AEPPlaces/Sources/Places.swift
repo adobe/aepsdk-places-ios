@@ -39,7 +39,8 @@ public class Places: NSObject, Extension {
 
     // MARK: properties
 
-    public static var extensionVersion: String = PlacesConstants.EXTENSION_VERSION
+    // Swift 6 flags public static vars as unsafe. It is only set once from a constant, and keeping it a var avoids an ABI break.
+    public nonisolated(unsafe) static var extensionVersion: String = PlacesConstants.EXTENSION_VERSION
     public var name: String = PlacesConstants.EXTENSION_NAME
     public var friendlyName: String = PlacesConstants.FRIENDLY_NAME
     public var metadata: [String: String]?

@@ -16,9 +16,11 @@ import XCTest
 
 class PlacesConfigurationTests: XCTestCase {
     
-    static var mockLibraries: [[String: Any]] = []
-    static var mockEndpoint = "placesEdgeEndpoint"
-    static var mockTtl: TimeInterval = 552
+    // XCTest runs setUp and tearDown on one thread, so this shared fixture is safe to mark nonisolated(unsafe).
+    nonisolated(unsafe) static var mockLibraries: [[String: Any]] = []
+    // These fixtures are never reassigned, so lets keep them Swift 6 safe.
+    static let mockEndpoint = "placesEdgeEndpoint"
+    static let mockTtl: TimeInterval = 552
     
     // json is not used, but shows an example of what the data will look like in the configuration eventData
     let json = """

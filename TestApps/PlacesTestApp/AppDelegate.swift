@@ -31,7 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MobileCore.configureWith(appId: "")
         
         let appState = application.applicationState
-        MobileCore.registerExtensions([Places.self, Signal.self, Analytics.self, Identity.self, Lifecycle.self, Assurance.self,  AEPEdgeIdentity.Identity.self, Edge.self, Consent.self]) {
+        // AEPIdentity and AEPEdgeIdentity both export Identity, so the module name is needed to pick the right one.
+        MobileCore.registerExtensions([Places.self, Signal.self, Analytics.self, AEPIdentity.Identity.self, Lifecycle.self, Assurance.self,  AEPEdgeIdentity.Identity.self, Edge.self, Consent.self]) {
             Assurance.startSession(url: URL(string: "<YOUR_SESSION_ID>"))
             if appState != .background {
                 MobileCore.lifecycleStart(additionalContextData: nil)

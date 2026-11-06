@@ -36,7 +36,9 @@ public extension Places {
     /// Returns all Points of Interest (POI) of which the device is currently known to be within.
     ///
     /// - Parameter closure: called with an array of `PointOfInterest` objects that represent the user-within POIs
-    static func getCurrentPointsOfInterest(_ closure: @escaping ([PointOfInterest]) -> Void) {
+    // Completion runs on the SDK queue. Sendable tells Swift 6 apps not to assume main actor, and preconcurrency keeps old callers compiling.
+    @preconcurrency
+    static func getCurrentPointsOfInterest(_ closure: @escaping @Sendable ([PointOfInterest]) -> Void) {
         let eventData: [String: Any] = [
             PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_USER_WITHIN_PLACES
         ]
@@ -73,7 +75,9 @@ public extension Places {
     ///
     /// - Parameter closure: called with a `CLLocation` object representing the last known lat/lon provided to
     ///                      the `Places` extension
-    static func getLastKnownLocation(_ closure: @escaping (CLLocation?) -> Void) {
+    // Completion runs on the SDK queue. Sendable tells Swift 6 apps not to assume main actor, and preconcurrency keeps old callers compiling.
+    @preconcurrency
+    static func getLastKnownLocation(_ closure: @escaping @Sendable (CLLocation?) -> Void) {
         let eventData: [String: Any] = [
             PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_LAST_KNOWN_LOCATION
         ]
@@ -100,10 +104,12 @@ public extension Places {
     ///   - location: a CLLocation object represent the current location of the device
     ///   - limit: a non-negative number representing the number of nearby POI to return from the request
     ///   - closure: called with an array of `PointOfInterest` objects that represent the nearest POI to the device and a `PlacesQueryResponseCode`
+    // Completion runs on the SDK queue. Sendable tells Swift 6 apps not to assume main actor, and preconcurrency keeps old callers compiling.
+    @preconcurrency
     @objc(getNearbyPointsOfInterest:limit:callback:)
     static func getNearbyPointsOfInterest(forLocation location: CLLocation,
                                           withLimit limit: UInt,
-                                          closure: @escaping ([PointOfInterest], PlacesQueryResponseCode) -> Void) {
+                                          closure: @escaping @Sendable ([PointOfInterest], PlacesQueryResponseCode) -> Void) {
         let eventData: [String: Any] = [
             PlacesConstants.EventDataKey.Places.REQUEST_TYPE: PlacesConstants.EventDataKey.Places.RequestType.GET_NEARBY_PLACES,
             PlacesConstants.EventDataKey.Places.LATITUDE: location.coordinate.latitude,

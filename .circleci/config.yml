@@ -18,60 +18,63 @@ workflows:
       - test-spm-podspec-archive:
           requires:
             - validate-code
+      - build-swift6:
+          requires:
+            - validate-code
+      - build-min-toolchain:
+          requires:
+            - validate-code
 
 commands:
   install_dependencies:
     steps:
-      # restore pods related caches
       - restore_cache:
-          name: Restore Gemfile Cache
+          name: Restore Gemfile cache
           keys:
-            - 1-gems-{{ checksum "Gemfile.lock" }}
+            - gems-v1-{{ checksum "Gemfile.lock" }}
+            - gems-v1-
 
-      # make sure we're on the right version of cocoapods
       - run:
-          name: Verify Cocoapods Version
-          command: bundle check || bundle install --path vendor/bundle
+          name: Configure Bundler
+          command: |
+            bundle config set path 'vendor/bundle'
+            bundle check || bundle install
 
-      # save cocoapods version gem data
       - save_cache:
-          name: Save Gemfile Cache
-          key: 1-gems-{{ checksum "Gemfile.lock" }}
+          name: Save Gemfile cache
+          key: gems-v1-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
 
-      # restore pods related caches
       - restore_cache:
-          name: Restore CocoaPods Cache
+          name: Restore CocoaPods cache
           keys:
-            - cocoapods-cache-v5-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
-            - cocoapods-cache-v5-{{ arch }}-{{ .Branch }}
-            - cocoapods-cache-v5
+            - pods-v1-{{ checksum "Podfile.lock" }}
+            - pods-v1-
 
-      # install CocoaPods - using default CocoaPods version, not the bundle
       - run:
-          name: Repo Update & Install CocoaPods
+          name: Install CocoaPods
           command: make ci-pod-install
 
-      # save pods related files
       - save_cache:
-          name: Save CocoaPods Cache
-          key: cocoapods-cache-v5-{{ arch }}-{{ .Branch }}-{{ checksum "Podfile.lock" }}
+          name: Save CocoaPods cache
+          key: pods-v1-{{ checksum "Podfile.lock" }}
           paths:
-            - ./Pods
+            - Pods
             - ~/.cocoapods
 
   prestart_ios_simulator:
     steps:
       - macos/preboot-simulator:
           platform: "iOS"
-          version: "17.2"
-          device: "iPhone 15"
+          version: "27.0"
+          device: "iPhone 18 Pro"
 
 jobs:
   validate-code:
+    resource_class: m4pro.medium
     macos:
-      xcode: 15.1.0 # Specify the Xcode version to use
+      xcode: 27.0.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -83,8 +86,9 @@ jobs:
           command: make lint
 
   test-ios:
+    resource_class: m4pro.medium
     macos:
-      xcode: 15.1.0 # Specify the Xcode version to use
+      xcode: 27.0.0 # Specify the Xcode version to use
 
     steps:
       - checkout
@@ -105,8 +109,9 @@ jobs:
       #     xtra_args: -c -v --xc --xp ./build/AEPPlaces.xcresult
 
   test-spm-podspec-archive:  
+    resource_class: m4pro.medium
     macos:
-      xcode: 15.0 # Specify the Xcode version to use
+      xcode: 27.0.0 # Specify the Xcode version to use
     
     steps:
       - checkout
@@ -132,3 +137,44 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "main" ] || [ "${CIRCLE_BRANCH}" == "staging" ]; then
               make test-SPM-integration
             fi
+
+  # Swift 6 language-mode coverage. Selecting Xcode 27 does not select Swift 6
+  # mode (checked-in targets are SWIFT_VERSION = 5.0), so this lane builds the
+  # AEPPlaces target in Swift 6 via AEPPLACES_SWIFT_VERSION (referenced only by that
+  # target), then compiles a Swift 6 consumer that calls the public
+  # completion-handler APIs with plain closures from @MainActor code. Dependencies
+  # keep their own declared language modes (matching a real Swift 6 app), so this
+  # does not force unreleased dependencies into Swift 6. This continuously protects the
+  # @Sendable / @preconcurrency boundary this PR adds.
+  # The full Swift 6 consumer *runtime* probe lands with the dependency-minimum
+  # bump, once the fixed @Sendable AEPCore releases are published.
+  build-swift6:
+    resource_class: m4pro.medium
+    macos:
+      xcode: 27.0.0
+
+    steps:
+      - checkout
+      - install_dependencies
+      - run:
+          name: Build AEPPlaces in Swift 6 language mode (dependencies keep their modes)
+          command: make build-swift6
+      - run:
+          name: Build Swift 6 consumer (plain closures from @MainActor)
+          command: make test-swift6-consumer
+
+  # Minimum-supported-toolchain coverage. README advertises Xcode 15.3+ / Swift
+  # 5.10 as the floor; 15.4 is the oldest 15.x image CircleCI still hosts and
+  # ships the same Swift 5.10 compiler. Compile-only (no iOS 27 runtime) to catch
+  # accidental use of APIs/features newer than the advertised minimum.
+  build-min-toolchain:
+    resource_class: m4pro.medium
+    macos:
+      xcode: 15.4.0
+
+    steps:
+      - checkout
+      - install_dependencies
+      - run:
+          name: Build AEPPlaces on minimum supported toolchain (Xcode 15.4 / Swift 5.10)
+          command: make build-min-toolchain

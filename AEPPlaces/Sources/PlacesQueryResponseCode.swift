@@ -13,8 +13,9 @@
 import Foundation
 
 /// Represents a specific outcome resulting from an interaction with the Places Query Service.
+// Passed to Sendable completion handlers, so it is marked Sendable for Swift 6.
 @objc(AEPPlacesQueryResponseCode)
-public enum PlacesQueryResponseCode: Int {
+public enum PlacesQueryResponseCode: Int, Sendable {
     case ok = 0
     case connectivityError
     case serverResponseError

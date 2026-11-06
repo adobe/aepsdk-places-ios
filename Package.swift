@@ -17,7 +17,7 @@ import PackageDescription
 
 let package = Package(
     name: "AEPPlaces",
-    platforms: [.iOS(.v12)],
+    platforms: [.iOS("15.0")],
     products: [
         .library(name: "AEPPlaces", targets: ["AEPPlaces"])
     ],

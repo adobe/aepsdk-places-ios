@@ -17,12 +17,14 @@ import Foundation
 class MockExtension: NSObject, Extension {
     var name = "com.adobe.mockExtension"
     var friendlyName = "mockExtension"
-    static var extensionVersion = "0.0.1"
+    // Never changed by tests, so a let keeps it Swift 6 safe.
+    static let extensionVersion = "0.0.1"
     var metadata: [String: String]?
 
-    static var registrationClosure: (() -> Void)?
-    static var unregistrationClosure: (() -> Void)?
-    static var eventReceivedClosure: ((Event) -> Void)?
+    // Swift 6 flags shared statics as unsafe. Tests set these hooks before use on a single thread, so we mark them nonisolated(unsafe).
+    nonisolated(unsafe) static var registrationClosure: (() -> Void)?
+    nonisolated(unsafe) static var unregistrationClosure: (() -> Void)?
+    nonisolated(unsafe) static var eventReceivedClosure: ((Event) -> Void)?
 
     let runtime: ExtensionRuntime
 

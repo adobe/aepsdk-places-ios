@@ -67,7 +67,8 @@ class PointOfInterestTests: XCTestCase {
     }
     """
     
-    static let EDGE_RESPONSE_MAP: [String: Any] = [
+    // [String: Any] isn't Sendable, but this fixture is never mutated, so it is safe to mark nonisolated(unsafe).
+    nonisolated(unsafe) static let EDGE_RESPONSE_MAP: [String: Any] = [
         "p": [
             "1234",
             "myplace",
@@ -82,7 +83,8 @@ class PointOfInterestTests: XCTestCase {
         ]
     ]
     
-    static let EDGE_RESPONSE_MAP_BAD_POI_DATA: [String: Any] = [
+    // Same as above, this fixture is never mutated so nonisolated(unsafe) is safe.
+    nonisolated(unsafe) static let EDGE_RESPONSE_MAP_BAD_POI_DATA: [String: Any] = [
         "p": [
             1234,
             3,

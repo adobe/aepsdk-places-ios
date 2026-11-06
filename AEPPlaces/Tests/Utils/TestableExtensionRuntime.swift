@@ -28,6 +28,11 @@ public class TestableExtensionRuntime: ExtensionRuntime {
     public func getHistoricalEvents(_ requests: [AEPCore.EventHistoryRequest], enforceOrder: Bool, handler: @escaping ([AEPCore.EventHistoryResult]) -> Void) {
         
     }
+
+    // Newer AEPCore added this requirement to ExtensionRuntime. Places doesn't record history, so the stub just reports success.
+    public func recordHistoricalEvent(_ event: AEPCore.Event, handler: ((Bool) -> Void)?) {
+        handler?(true)
+    }
     
     public var listeners: [String: EventListener] = [:]
     public var dispatchedEvents: [Event] = []

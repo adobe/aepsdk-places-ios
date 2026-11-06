@@ -80,6 +80,15 @@ check-version:
 test-SPM-integration:
 	(sh ./Scripts/test-spm.sh)
 
+build-swift6:
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=iOS Simulator' AEPPLACES_SWIFT_VERSION=6.0
+
+test-swift6-consumer:
+	(sh ./Scripts/test-swift6-consumer.sh)
+
+build-min-toolchain:
+	xcodebuild build -workspace $(PROJECT_NAME).xcworkspace -scheme $(PROJECT_NAME) -destination 'generic/platform=iOS Simulator'
+
 test-podspec:
 	(sh ./Scripts/test-podspec.sh)
 

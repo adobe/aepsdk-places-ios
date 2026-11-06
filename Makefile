@@ -8,7 +8,7 @@ SCHEME_NAME_XCFRAMEWORK = AEPPlacesXCF
 
 SIMULATOR_ARCHIVE_PATH = $(CURRENT_DIRECTORY)/build/ios_simulator.xcarchive/Products/Library/Frameworks/
 IOS_ARCHIVE_PATH = $(CURRENT_DIRECTORY)/build/ios.xcarchive/Products/Library/Frameworks/
-IOS_DESTINATION = 'platform=iOS Simulator,name=iPhone 15'
+IOS_DESTINATION = 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0'
 
 setup:
 	(pod install)
